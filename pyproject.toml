@@ -1,0 +1,25 @@
+[project]
+name = "autotest"
+version = "0.1.0"
+description = "Lightweight GUI automation tool (record/play keyboard and mouse)"
+authors = [{ name = "Tu Nombre", email = "tu@email.com" }]
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "pynput",
+    "pyautogui",
+    "mss"
+]
+
+[project.scripts]
+autotest = "autotest.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
