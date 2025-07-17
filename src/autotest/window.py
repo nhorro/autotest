@@ -1,7 +1,45 @@
 import subprocess
 import time
+import subprocess
 
-from .screenshot import get_window_geometry
+def get_window_geometry(window_title, min_width=300, min_height=200):
+    """
+    Busca ventanas visibles cuyo título contenga `window_title` y devuelve la geometría
+    (left, top, width, height) de la más grande que cumpla con tamaño mínimo.
+    """
+    try:
+        win_ids = subprocess.check_output(
+            ["xdotool", "search", "--onlyvisible", "--name", window_title],
+            text=True
+        ).strip().splitlines()
+    except subprocess.CalledProcessError:
+        raise RuntimeError(f"No windows found with title matching: {window_title}")
+
+    best = None
+    for win_id in win_ids:
+        try:
+            output = subprocess.check_output(["xwininfo", "-id", win_id], text=True)
+            geom = {}
+            for line in output.splitlines():
+                if "Absolute upper-left X" in line:
+                    geom["left"] = int(line.split()[-1])
+                elif "Absolute upper-left Y" in line:
+                    geom["top"] = int(line.split()[-1])
+                elif "Width:" in line:
+                    geom["width"] = int(line.split()[-1])
+                elif "Height:" in line:
+                    geom["height"] = int(line.split()[-1])
+            if geom["width"] >= min_width and geom["height"] >= min_height:
+                best = geom
+                break
+        except subprocess.CalledProcessError:
+            continue
+
+    if not best:
+        raise RuntimeError(f"No visible window with title '{window_title}' and minimum size found.")
+
+    return best
+
 
 def list_open_window_titles():
     """

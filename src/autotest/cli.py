@@ -18,7 +18,16 @@ def main():
     parser_capture.add_argument("-m", "--monitor", type=int, default=None)
     parser_capture.add_argument("-w", "--window-title", default=None)
 
-    parser_list = subparsers.add_parser("list-windows", help="List window titles")
+    parser_annotate = subparsers.add_parser("annotate", help="Anotar regiones sobre una imagen")
+    parser_annotate.add_argument("-i", "--input", required=True, help="Imagen base")
+    parser_annotate.add_argument("-o", "--output", default="annotations.json", help="Archivo de salida")
+
+    subparsers.add_parser("list-windows", help="List window titles")
+
+    parser_annotate = subparsers.add_parser("annotate", help="Anotar regiones sobre una imagen")
+    parser_annotate.add_argument("-i", "--input", required=True, help="Imagen base")
+    parser_annotate.add_argument("-o", "--output", default="annotations.json", help="Archivo de salida")
+
 
 
     args = parser.parse_args()
@@ -36,5 +45,8 @@ def main():
     elif args.command == "list-windows":
         for t in window.list_open_window_titles():
             print(t)
+    elif args.command == "annotate":
+        from .annotate import annotate_image
+        annotate_image(args.input, args.output)            
     else:
         parser.print_help()
